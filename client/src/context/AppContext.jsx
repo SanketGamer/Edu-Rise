@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import {dummyCoursesData} from "../assets/assets"
 import humanizeDuration from "humanize-duration";
-
+import {useAuth,useUser} from "@clerk/clerk-react"
 export const AppContext=createContext();
 
 export const AppContextProvider=(props)=>{
@@ -12,7 +12,8 @@ const [enrolledcourses,setEnrolledcourses]=useState([])
 const [showNavbar,setshowNavbar]=useState(false)
 const [filteredcourse,setfilteredcourse]=useState([])
 
-const courselogo="</>"
+const {getToken}=useAuth()
+const {user}=useUser()
 
 //fetch all courses
 async function fetchAllCourses(){
@@ -58,13 +59,22 @@ return humanizeDuration(time*60*1000,{units: ["h","m"]})
 //     chapter.PrelectureContent.map((lecture,lectureindex))=>total+=lecture.)
 // }
 
+async function logToken(){
+    console.log(await getToken())
+}
+
 useEffect(()=>{
 fetchAllCourses()
 FetchUserEnrolledCourses()
 },[setshowNavbar])
 
+useEffect(()=>{
+if(user){
+    logToken()
+}
+},[user])
 const val={
-currency,allcourses,calculateRating,courselogo,isEducator,setEducator,
+currency,allcourses,calculateRating,isEducator,setEducator,
 enrolledcourses,setEnrolledcourses,FetchUserEnrolledCourses,TotalCourseDuration,showNavbar,setshowNavbar,filteredcourse,setfilteredcourse
 }
 
