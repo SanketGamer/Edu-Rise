@@ -6,7 +6,7 @@ import {Line} from "rc-progress"
 
 const Myenrollments = () => {
   const navigate=useNavigate()
-  const {enrolledcourses}=useContext(AppContext)
+  const {allcourses}=useContext(AppContext)
 
   return (
     <>
@@ -22,10 +22,10 @@ const Myenrollments = () => {
       </thead>
       <tbody className='text-gray-700'>
         {
-          enrolledcourses.map((course,index)=>{
+          allcourses.map((course,index)=>{
             return <tr className='border-b border-gray-500/20' key={index}>
               <td className='flex items-center md:px-4 pl-2 md:pl-4 py-3 space-x-3 '>
-                <img className='w-14 sm:w-24 md:w-28' src={course.courseThumbnail} alt="" />
+                <img className='w-14 sm:w-24 md:w-28' src={course.courseThumbnail} />
                 <div className='flex-1'>
                   <p className='mb-1 max-sm:text-sm'>{course.courseTitle}</p>
                   <Line className='bg-gray-300 rounded-full' strokeWidth={2}/>
@@ -35,7 +35,7 @@ const Myenrollments = () => {
                 <span>Lectures</span>
               </td>
               <td className='max-sm:text-right'>
-                <button className='bg-blue-600 py-1.5 px-3 sm:px-5 max-sm:text-xs sm:py-2 text-white cursor-pointer rounded'>Completed</button>
+                <button onClick={()=>navigate(`/course/${course._id}`)} className='bg-blue-600 py-1.5 px-3 sm:px-5 max-sm:text-xs sm:py-2 text-white cursor-pointer rounded'>On Going</button>
               </td>
             </tr>
           })

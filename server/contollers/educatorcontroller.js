@@ -1,12 +1,13 @@
-import {clerkClient,getAuth} from "@clerk/express"
+import {clerkClient} from "@clerk/express"
 import Course from "../models/course.js";
 import {v2 as cloudinary} from "cloudinary"
 import Purchase from "../models/purchase.js";
+import User from "../models/user.js"
 
 //update role to become educator
 export async function updateRollEducator(req,res){
     try{
-        const {userId}=getAuth(req);
+        const { userId } = req.auth(); 
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata:{
                 role: "educator"
@@ -23,9 +24,10 @@ export async function updateRollEducator(req,res){
 //Add new Course
 export async function AddCourse(req,res){
     try{
+         const { userId } = req.auth(); 
         const {courseData}=req.body;
         const imageFile=req.file;
-        const educatorId = req.auth?.userId;
+        const educatorId = userId
 
         if(!imageFile){
             return res.json({success:false,message:"thumbnail Not Attached"})
@@ -44,10 +46,26 @@ export async function AddCourse(req,res){
     }
 }
 
-//Get Educator Courses
+//get syllabus
+export async function GetSyllabus(req,res){
+    try{
+     const {courseId} = req.params;
+     const course=await Course.findById(courseId).select("syllabus")
+     if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    res.json({success:true,syllabus:course.syllabus})
+    }
+    catch(error){
+    res.status(500).json({success:false,message:error.message})
+    }
+}
+
+//Get Educator Courses` 
 export async function getEducatorCourses(req,res){
     try{
-       const educator=req.auth.userId
+       const { userId } = req.auth();
+       const educator = userId;
        const courses=await Course.find({educator})
        res.json({success:true,courses})
     }
@@ -59,7 +77,8 @@ export async function getEducatorCourses(req,res){
 //Get Educator Dashboard Data(total Earning,enrolled students,no of courses)
 export async function educatorDashboardData(req,res){
     try{
-        const educator=req.auth.userId;
+       const { userId } = req.auth();
+        const educator = userId;
         const courses=await Course.find({educator})
         const totalCourse=courses.length
         const courseIds=courses.map((course)=>course._id)
@@ -87,7 +106,8 @@ export async function educatorDashboardData(req,res){
 //Get enrolled student data with purchase data
 export async function GetEnrollStudentData(req,res){
 try{
-  const educator=req.auth.userId;
+   const { userId } = req.auth();
+   const educator = userId;
   const courses=await Course.find({educator})
   const courseIds=courses.map(course=>course._id)
   const purchases=await Purchase.find({
@@ -104,5 +124,4 @@ try{
 catch(error){
 res.status(404).json({success:false,message:error.message})
 }
-
 }

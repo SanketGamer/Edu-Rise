@@ -1,13 +1,50 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState,useEffect } from 'react'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
 
 const Coursecard = ({course}) => {
-    const {currency,calculateRating}=useContext(AppContext)
+    const {id}=useParams()
+    const {currency,backendUrl,getToken,userData}=useContext(AppContext)
     const location=useLocation()
+    const [isAlreadyEnrolled,setisAlreadyEnrolled]=useState(false)
+
+
+   async function EnrollCourse(){
+   try{
+   if(!userData){
+     return toast.warn("Login to Enroll")
+    }
+    if(isAlreadyEnrolled){
+      return toast.warn("Already Enrolled")
+    }
+    const token=await getToken();
+    const {data}=await axios.post(backendUrl+"/api/v1/user/purchase",{courseId:course._id},{headers: {Authorization:`Bearer ${token}`}})
+     console.log("Payment API response:", data)
+      if(data.success){
+      const {success_url}=data
+      window.location.replace(success_url)
+      }
+     else{
+      toast.error(data.message)
+    }
+  }
+  catch(error){
+   toast.error(error.message)
+  }
+ }
+ 
+    useEffect(()=>{
+     if(userData &&  course){
+       setisAlreadyEnrolled(userData.enrolledCourses.includes(course._id)  || false)
+     }
+     },[userData,course])
+
   return (
-    <div className='md:h-120 border border-gray-500/30 overflow-hidden rounded-t-3xl rounded-b-3xl bg-white'>
+    <div className='md:h-128 h-116 border border-gray-500/30 overflow-hidden rounded-t-3xl rounded-b-3xl bg-white'>
         <img className='w-full' src={course.courseThumbnail} />
         <div className='px-4 text-left mt-4'>
             <h3 className='text-xl font-medium'>{course.courseTitle}</h3>
@@ -23,14 +60,20 @@ const Coursecard = ({course}) => {
               <p className='md:text-lg text-green-500'>{course.discount}%off</p>
             </div>
             
-           {location.pathname === "/" ? (
+        {location.pathname === "/" ? (
           <Link to={`/courseinfo/${course._id}`}>
-             <button className="bg-blue-600 text-white py-3 px-4 w-full rounded-full cursor-pointer mt-3">View Details</button>
-             </Link>) : (
-               <Link to={"/course/"+course._id}>
-                <button className="bg-blue-600 text-white py-3 px-4 w-full rounded-full cursor-pointer mt-3">Buy Now</button>
-                </Link>
-              )}
+          <button className="bg-blue-600 text-white py-3 px-4 w-full rounded-full cursor-pointer mt-3">View Details</button>
+          </Link>
+         ) : location.pathname === "/course-list" ? (
+          <Link to={`/courseinfo/${course._id}`}>
+          <button className="bg-blue-600 text-white py-3 px-4 w-full rounded-full cursor-pointer mt-3">View Details</button>
+          </Link>
+          ) : (<div>
+              <button onClick={EnrollCourse} className="bg-blue-600 text-white py-3 px-4 w-full rounded-full cursor-pointer mt-3">
+                {isAlreadyEnrolled ? "Already Enrolled" : "Buy Now"}</button>
+              </div>
+           )}
+
         </div>
     </div>
   )

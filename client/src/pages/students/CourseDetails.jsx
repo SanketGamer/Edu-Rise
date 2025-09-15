@@ -6,38 +6,59 @@ import Loading from '../../components/students/Loading'
 import YouTube from 'react-youtube'
 import { FaYoutube } from "react-icons/fa";
 import Rating from '../../components/students/Rating'
-
+import {Line} from "rc-progress"
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 
 const CourseDetails = () => {
 
-  const navigate=useNavigate();
-  const {allcourses}=useContext(AppContext)
-  const [courseData,setcourseData]=useState([])
-  const [playerData,setplayerData]=useState(null)
-
   const {id}=useParams()
-   async function FetchCourseData(){
-  if(allcourses && allcourses.length>0){
-   const findcourse=allcourses.filter(course=>course._id === id)
-    setcourseData(findcourse)
-   }
+  const navigate=useNavigate();
+  const {allcourses,currency,backendUrl}=useContext(AppContext)
+  const [courseData,setcourseData]=useState(null)
+  const [playerData,setplayerData]=useState(null)
+  const [completed,setcompleted]=useState([])
+
+  async function FetchCourseData(){
+  try{
+    const {data}=await axios.get(backendUrl+"/api/v1/course/"+id)
+    if(data.success){
+      setcourseData(data.courseData)
+    }
+    else{
+      toast.error(data.message)
+    }
+  }
+  catch(error){
+    toast.error(error.message)
+  }
+ }
+
+
+
+ function SaveQuestionProgess(lecture){
+  setcompleted(prev=>prev.includes(lecture) ? prev.filter((l)=> l!==lecture) : [...prev,lecture])
  }
 
   useEffect(()=>{
     FetchCourseData()
   },[allcourses,id])
 
-if(!courseData) return <Loading/>
 
-  return (
+  return courseData? (
     <div>
-      {
-        courseData.map((course,index)=>{
-          return <div key={index}>
             {
-              course.courseContent.map((chapter,chapterindex)=>(
-                <SheetSection key={chapterindex} title={chapter.chapterTitle} count={chapter.chapterContent.length}>
+              courseData.courseContent.map((chapter,chapterindex)=>{
+                 const completeLecture = chapter.chapterContent.filter((lecture) => completed.includes(lecture)).length;
+                return <SheetSection key={chapterindex} title={chapter.chapterTitle} prevcnt={(completeLecture)} count={chapter.chapterContent.length}
+                   progess={
+    <div className="w-full">
+      {/* filter.length=1/3=0.333 && 0.333*100=33% */}
+      <Line percent={(completeLecture/chapter.chapterContent.length)*100} 
+      strokeWidth={4} trailWidth={4} strokeColor="#22c55e" trailColor="#374151" className="rounded-full"/>
+    </div>
+  }>
                 <table className="w-full border-separate border-spacing-0">
                <thead className='h-14'>
               <tr className="border font-semibold bg-zinc-700">
@@ -54,7 +75,7 @@ if(!courseData) return <Loading/>
         {chapter.chapterContent.map((lecture, lectureindex) => (
         <tr key={lectureindex} className="border h-15 border-gray-700 text-white">
           {/* checkbox section */}
-          <td className="py-3 px-4 sm:table-cell text-center"><input type="checkbox"/></td>
+          <td className="py-3 px-4 sm:table-cell text-center"><input onChange={()=>(SaveQuestionProgess(lecture))} checked={completed.includes(lecture)} type="checkbox"/></td>
           {/* lecture section */}
           <td className='text-center'>Lec: {lectureindex + 1}</td>
           {/* lecture Title */}
@@ -93,13 +114,10 @@ if(!courseData) return <Loading/>
             </tbody>
              </table>
                </SheetSection>
-               ))
-              }
-           </div>
         })
-      }
+              }
       {playerData && (
-  <div className="flex justify-center w-full relative bottom-100">
+  <div className="flex justify-center w-full relative bottom-50">
     <div className="relative border py-14 px-7 max-w-2xl shadow-2xl z-10 rounded-t md:rounded-none bg-zinc-900">
       {/* Cancel button positioned at top-right */}
       <button
@@ -117,7 +135,7 @@ if(!courseData) return <Loading/>
   </div>
 )}
     </div>
-  )
+  ) : <Loading/>
 }
 
 export default CourseDetails

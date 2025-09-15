@@ -22,13 +22,13 @@ const CourseList = () => {
 
   return (
     <>
-    <div className='relative md:px-36 px-8 pt-20 text-left'>
+    <div className='bg-gray-900 relative md:px-36 px-8 pt-20 text-left h-screen'>
       {/* left Side */}
 
         {/* right Side Show courses */}
         <div className='flex flex-col md:flex-row gap-6 items-center justify-between w-full'>
           <div>
-            <h1 className='font-semibold text-4xl text-gray-800'>Course List</h1>
+            <h1 className='font-semibold text-4xl text-green-500'>Course List</h1>
             <Link className='text-indigo-500 cursor-pointer' to={"/"}><span>Home</span> / <span>Course List</span></Link>
           </div>
           <Searchbar data={input}/>

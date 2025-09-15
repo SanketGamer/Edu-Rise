@@ -19,7 +19,7 @@ const courseData=await Course.findById(id).populate({path:"educator"})
 //remove youtube solution if ispreview->false
 courseData.courseContent.forEach(chapter=>{
     chapter.chapterContent.forEach(lecture=>{
-        if(!lecture.isPublished){
+        if(!lecture.discount===0){
             lecture.lectureUrl=""
         }
     })

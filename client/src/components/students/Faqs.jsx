@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 const Faqs = () => {
 
   return (
-    <div className='w-full sm:px-28 px-1'>
+    <div className='w-screen bg-gray-900 h-screen sm:px-28 px-1 py-4'>
       <h1 className='text-3xl font-medium prata-regular text-white'>FAQs</h1>
       <div className='flex flex-col gap-3 mt-6'>
           <FaqsSection title="Q. Why should I choose EduRise?">

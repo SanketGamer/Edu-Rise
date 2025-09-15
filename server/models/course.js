@@ -26,6 +26,13 @@
             type:String,
             required:true
         },
+       syllabus: [
+        {
+       week: Number,
+       title: String,
+       topics: [String],   // each week has topics
+        }
+      ],
         courseThumbnail:{
             type:String,
         },
@@ -40,7 +47,6 @@
             max: 100
         },
         courseContent:[chapterSchema],
-        isPublished:{type:Boolean,required:true},
         educator:{
             type:String,
             ref:"User"

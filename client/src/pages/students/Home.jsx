@@ -4,7 +4,7 @@ import CourseSection from '../../components/students/CourseSection'
 import Testimonials from './Testimonials'
 import Footer from '../../components/students/Footer'
 import Faqs from '../../components/students/Faqs'
-import { useLocation } from 'react-router-dom'
+
 
 const Home = () => {
   

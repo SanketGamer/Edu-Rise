@@ -1,9 +1,9 @@
-import {clerkClient,getAuth} from "@clerk/express"
+import {clerkClient} from "@clerk/express"
 
 //Protect educator route that only educator can access
 export async function protectEducator(req,res,next){
     try{
-        const {userId}=getAuth(req)
+          const { userId } = req.auth(); 
         const response=await clerkClient.users.getUser(userId)
         if(response.publicMetadata.role !== 'educator'){
             return res.json({success:false,message:"Unauthorized Access"})

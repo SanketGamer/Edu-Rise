@@ -1,20 +1,37 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
-import { assets,dummyDashboardData } from '../../assets/assets'
+import { assets} from '../../assets/assets'
 import Loading from '../../components/students/Loading'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 
 const Dashboard = () => {
-  const {currency}=useContext(AppContext)
+  const {currency,backendUrl,isEducator,getToken}=useContext(AppContext)
   const [dashboardData,setdashboardData]=useState(null)
 
-  function fetchDashboardData(){
-    setdashboardData(dummyDashboardData)
+  async function fetchDashboardData(){
+    try{
+      const token=await getToken()
+      const {data}=await axios.get(backendUrl+"/api/v1/educator/dashboard",{headers:{Authorization:`Bearer ${token}`}})
+      console.log(data)
+      if(data.success){
+        setdashboardData(data.dashboardData)
+      }
+      else{
+        toast.error(data.message)
+      }
+    }
+    catch(error){
+      toast.error(error.message)
+    }
   }
 
   useEffect(()=>{
-    fetchDashboardData()
-  },[])
+    if(isEducator){
+      fetchDashboardData()
+    }
+  },[isEducator])
 
   return dashboardData? (
     <div className='min-h-screen flex flex-col gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0'>
@@ -24,7 +41,7 @@ const Dashboard = () => {
           <div className='flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 pb-0'>
             <img src={assets.patients_icon}/>
             <div>
-              <p className='text-2xl font-medium text-gray-700'>{dashboardData.enrolledStudentsData.length}</p>
+              <p className='text-2xl font-medium text-gray-700'>{dashboardData.enrollStudentData.length}</p>
               <p className='text-base text-gray-500'>Total Enrollments</p>
             </div>
           </div>
@@ -60,7 +77,7 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 {
-                dashboardData.enrolledStudentsData.map((item,index)=>{
+                dashboardData.enrollStudentData.map((item,index)=>{
                   return <tr key={index}>
                     <td className='md:px-4 px-2 py-3 items-center space-x-3 hidden sm:table-cell'>
                       <img src={item.student.imageUrl} className='w-9 h-9 rounded-full'/>

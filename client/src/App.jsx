@@ -20,13 +20,14 @@ import Testimonials from './pages/students/Testimonials'
 import CourseDetails from './pages/students/CourseDetails'
 import Courseinfo from './components/students/Courseinfo'
 import "quill/dist/quill.snow.css";
-
+import {ToastContainer} from "react-toastify"
 
 const App = () => {
 
   return (
     <div className='text-default min-h-screen bg-white '>
      <BrowserRouter>
+     <ToastContainer/>
      <NavbarWrapper/>
      <Routes>
       <Route path="/" element={<Home/>}/>

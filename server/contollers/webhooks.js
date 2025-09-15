@@ -51,9 +51,10 @@ res.json({success:false,message:error.message})
 }
 }
 
-const stripeInstance=new Stripe(process.env.STRIPE_SECRET_KEY)
 
+const stripeInstance=new Stripe(process.env.STRIPE_SECRET_KEY)
 export async function stripeWebHooks(req,res){
+//this means-> authenticating Clerk webhook request
 const sig = req.headers['stripe-signature']
 let event;
 try{

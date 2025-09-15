@@ -1,9 +1,13 @@
 import Quill from 'quill';
-import React, { useEffect,useRef, useState } from 'react'
+import React, { useContext, useEffect,useRef, useState } from 'react'
 import { assets } from '../../assets/assets';
 import uniqid from "uniqid"
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 const AddCourse = () => {
 
+  const {backendUrl,getToken}=useContext(AppContext)
   const quillRef=useRef();
   const editoRef=useRef();
   const [image,setimage]=useState(null)
@@ -13,11 +17,23 @@ const AddCourse = () => {
   const [chapters,setchapters]=useState([])
   const [showPopUp,setShowPopUp]=useState(false)
   const [currchapterId,setcurrChapterId]=useState(null)
+  const [syllabus,setSyllabus]=useState([
+    {week:1, title: "", topics: [""]},
+    {week:2, title: "", topics: [""]},
+    {week:3, title: "", topics: [""]},
+    {week:4, title: "", topics: [""]},
+    {week:5, title: "", topics: [""]},
+    {week:6, title: "", topics: [""]},
+    {week:7, title: "", topics: [""]},
+    {week:8, title: "", topics: [""]},
+  ])
+  const [showsyllabus,setshowsyllabus]=useState(false)
+  
   const [lectureDetails,setlectureDetails]=useState({
     lectureTitle:"",
     lectureUrl:"",
     practiceUrl:"",
-    Dificulty:"",
+    lectureDificulty:"", 
   })
 
   //add chapters
@@ -42,6 +58,12 @@ const AddCourse = () => {
       setchapters(chapters.map((chapter)=>chapter.chapterId === chapterId ? {...chapter, collapsed: !chapter.collapsed} :chapter))
     }
   }
+
+//show syllabus
+function handleSyllabus(){
+setshowsyllabus(true)
+}
+
 //show lecture section
  function handleLecture(action,chapterId,lectureindex){
   if(action === 'add'){
@@ -72,16 +94,50 @@ const AddCourse = () => {
     return chapter;
   }))
     setShowPopUp(false)
-  setlectureDetails({
-    lectureTitle:"",
-    lectureDuration:"",
-    lectureUrl:"",
-    isPreviewFree:false,
+     setlectureDetails({
+     lectureTitle:"",
+     lectureDuration:"",
+     lectureUrl:"",
+     lectureDificulty:"", 
     })
  }
 
   async function HanlerSubmit(e){
-    e.preventDefault()
+    try{
+       e.preventDefault()
+       if(!image){
+        toast.error('Thumbnail Not Selected')
+       }
+       const courseData={
+        courseTitle, 
+        courseDescription: quillRef.current.root.innerHTML, 
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+        syllabus,
+        isPublished: false, 
+       }
+       const formData = new FormData()
+       formData.append('courseData',JSON.stringify(courseData))
+       formData.append('image',image)
+       const token=await getToken()
+       const {data}=await axios.post(backendUrl+"/api/v1/educator/add-course",formData,{headers: {Authorization: `Bearer ${token}`}})
+       if(data.success){
+        toast.success(data.message)
+        setcourseTitle('')
+        setcoursePrice(0)
+        setDiscount(0)
+        setimage(null)
+        setchapters([])
+        quillRef.current.root.innerHTML=""
+       }
+       else{
+        toast.error(data.message)
+       }
+    }
+    catch(error){
+      toast.error(error.message)
+    }
   }
 
   useEffect(()=>{
@@ -103,6 +159,12 @@ const AddCourse = () => {
           <p>Course Description</p>
           <div ref={editoRef}></div>
         </div>
+        {/* Syllabus */}
+       <div className="flex flex-col gap-1 mt-6">
+     <h2 className="text-lg font-semibold">Syllabus</h2>
+  <button onClick={handleSyllabus} type="button" className="bg-green-500 text-white px-4 py-2 rounded mt-4 cursor-pointer">+ Add Week</button>
+</div>
+
         {/* price of the course && image download*/} 
         <div className='flex items-center justify-between flex-wrap'>
         <div className='flex flex-col gap-1 mt-4'>
@@ -114,7 +176,7 @@ const AddCourse = () => {
           <label htmlFor="thumbnailImage" className='flex items-center gap-3'>
             <img src={assets.file_upload_icon} className='p-3 bg-blue-500 rounded cursor-pointer'/>
             <input onChange={(e)=>setimage(e.target.files[0])} type="file" id='thumbnailImage' accept='image/*' hidden/>
-            <img src={image?URL.createObjectURL(image):""} className='max-h-10'/>
+           {image && (<img src={URL.createObjectURL(image)} className="max-h-10" />)}
           </label>
         </div>
         </div>
@@ -165,7 +227,7 @@ const AddCourse = () => {
         <div onClick={()=>handleChapters('add')} className='flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer'>+Add Chapters</div>
         {
           showPopUp && (
-            <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
+            <div className='fixed inset-0 flex items-center justify-center bg-gr bg-opacity-50'>
               <div className='bg-white text-gray-700 p-4 rounded relative w-full max-w-80'>
                 <h2 className='text-lg font-smibold mb-4'>Add lectures</h2>
 
@@ -189,15 +251,45 @@ const AddCourse = () => {
 
                   <div className='mb-2'>
                   <p>Dificulty Level</p>
-                  <input type="text" className='mt-1 block w-full border rounded py-1 px-2'  value={lectureDetails.Dificulty} 
-                  onChange={(e)=>setlectureDetails({...lectureDetails,Dificulty:e.target.value})}/>
+                  <input type="text" className='mt-1 block w-full border rounded py-1 px-2'  value={lectureDetails.lectureDificulty} 
+                  onChange={(e)=>setlectureDetails({...lectureDetails, lectureDificulty:e.target.value})}/>
                 </div>
+
                 <button onClick={AddLecture} type='button' className='w-full bg-blue-400 text-white px-4 py-2 rounded'>ADD</button>
-                <img className='absoulte w-4 top-4 right-4 cursor-pointer' src={assets.cross_icon} />
+                <img onClick={()=>setShowPopUp(false)} className='absoulte w-4 top-4 right-4 cursor-pointer' src={assets.cross_icon} />
               </div>
             </div>
           )
         }
+        {/* add syllabus button */}
+       {
+          showsyllabus && (
+          <div className='fixed inset-0 flex items-center justify-center bg-gray-800'>
+            <div className='bg-white text-gray-700 p-4 rounded relative w-full max-w-80'>
+              <h2>Add Syllabus</h2>
+              <div className='mb-2'>
+                {
+                  syllabus.map((week,windex)=>(
+                    <div key={windex}>
+                      <div>
+                        <p>Week {week.week}</p>
+                        <input onChange={(e)=>{
+                          const newsyllabus=[...syllabus]
+                          newsyllabus[windex].title=e.target.value
+                          setSyllabus(newsyllabus)
+                        }} type="text" placeholder='Week Title' value={week.title}  className="border rounded p-2 w-full mt-2"/>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+              <button onClick={()=>setshowsyllabus(false)} type='button' className='w-full bg-blue-400 text-white px-4 py-2 rounded'>Add Syllabus</button>
+              <img onClick={()=>setSyllabus(false)} className='absoulte w-4 mt-2 top-4 right-4 cursor-pointer' src={assets.cross_icon} />
+            </div>
+          </div>
+        )
+       }
+
         </div>
         <button type='submit' className='bg-black text-white w-max py-2.5 px-8 rounded my-4 cursor-pointer'>ADD</button>
       </form>

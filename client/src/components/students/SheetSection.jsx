@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-const SheetSection = ({title,count,children}) => {
+const SheetSection = ({title,prevcnt=0,count,children,progess}) => {
     const [isOpen,setopen]=useState(false)
 
   return (
@@ -11,7 +11,10 @@ const SheetSection = ({title,count,children}) => {
        </svg>
     <span>{title}</span>
     </div>
-    <span>{`0 / ${count}`}</span>
+    <div className='flex items-center gap-6'>
+    <div className="w-45">{progess}</div>
+    <span>{`${prevcnt} / ${count}`}</span>
+    </div>
     </div>
     {/* nested div show */}
     {isOpen && <div className='pl-6 pb-4 text-white'>
