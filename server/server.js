@@ -21,7 +21,16 @@ await connectDB()
 await connectCloudinary()
 
 //middleware
-app.use(cors())
+
+app.use(
+  cors({
+    origin: "https://edu-riseuser.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  })
+)
+
+
 app.post("/stripe", express.raw({ type: 'application/json' }), stripeWebHooks);
 //app.post("/stripe", bodyParser.raw({ type: "application/json" }), stripeWebHooks);
 app.post("/clerk", express.raw({ type: 'application/json' }), clerkWebhooks);
