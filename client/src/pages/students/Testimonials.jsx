@@ -1,49 +1,65 @@
 import React from 'react';
+import { motion } from 'framer-motion'
 import { dummyTestimonial, assets } from "../../assets/assets";
 
 const Testimonials = () => {
   return (
-    <div className="py-10 px-4 md:px-10 lg:px-20 bg-gray-50">
-      <h2 className="text-3xl font-bold text-gray-800 text-center mb-10">Testimonials</h2>
+    <div className="py-12 px-4 md:px-10 lg:px-16 w-screen">
+      <h2 className="text-3xl font-bold text-white text-center mb-10">Testimonials</h2>
 
-      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 justify-items-center max-w-6xl mx-auto">
-        {dummyTestimonial.map((testimonial, index) => (
-          <div
-            key={index}
-            className="w-full max-w-[280px] min-h-[300px] border border-gray-200 rounded-2xl bg-white shadow-md p-5 flex flex-col gap-4 hover:shadow-lg transition-shadow duration-300"
-          >
-            <div className="flex items-center gap-3">
-              <img
-                className="h-12 w-12 rounded-full object-cover"
-                src={testimonial.image}
-                alt={testimonial.name}
-              />
-              <div>
-                <h3 className="text-base font-semibold text-gray-900">{testimonial.name}</h3>
-                <p className="text-sm text-gray-600">{testimonial.role}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between flex-1">
-              <div>
-                <div className="flex gap-1 mt-2">
-                  {[...Array(5)].map((_, i) => (
-                    <img
-                      key={i}
-                      className="h-4 w-4"
-                      src={i < Math.floor(testimonial.rating) ? assets.star : assets.star_blank}
-                      alt="star"
-                    />
-                  ))}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+        {dummyTestimonial.map((t, idx) => {
+          const likes = (t.rating ? Math.round(t.rating * 120) : 120) + idx * 7
+          const replies = 3 + (idx % 7)
+          return (
+            <motion.div
+              key={idx}
+              className="rounded-3xl border border-white/10 bg-[#0e1826]/70 backdrop-blur-md shadow-[0_0_0_1px_rgba(255,255,255,0.04)_inset] overflow-hidden"
+              whileHover={{ y: -4, scale: 1.01 }}
+              transition={{ type: 'spring', stiffness: 250, damping: 20 }}
+            >
+              {/* header */}
+              <div className="flex items-start justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <img src={t.image} alt={t.name} className="w-10 h-10 rounded-full object-cover"/>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-semibold leading-none">{t.name}</p>
+                      <span className="text-xs text-white/60">· Follow</span>
+                    </div>
+                    <p className="mt-1 text-base text-white">{t.role || '@learner'}</p>
+                  </div>
                 </div>
-                <p className="text-gray-600 mt-3 text-sm leading-snug">
-                  {testimonial.feedback}
-                </p>
+                <button className="text-white/40 hover:text-white/70">✕</button>
               </div>
-              <a href="#" className="text-blue-500 underline text-sm mt-2 text-left">Read more...</a>
-            </div>
-          </div>
-        ))}
+
+              {/* content */}
+              <div className="px-4 pb-2">
+                <p className="text-white/80 text-sm leading-relaxed">
+                  {t.feedback}
+                </p>
+                {/* optional media placeholder style */}
+                <div className="mt-3 rounded-2xl bg-white/5 border border-white/10 aspect-[16/10]">
+                 <p className="text-white text-sm text-center mt-2">
+                 {t.mediaText || "Some placeholder text here"}
+                  </p>
+                </div>
+              </div>
+
+              {/* actions */}
+              <div className="px-4 pt-1 pb-3">
+                <div className="flex items-center gap-6 text-white/60 text-sm">
+                  <span className="flex items-center gap-2"><span>❤</span>{likes}</span>
+                  <span className="flex items-center gap-2"><span>💬</span>Reply</span>
+                  <span className="flex items-center gap-2"><span>🔗</span>Copy link</span>
+                </div>
+                <button className="mt-3 w-full text-center text-sky-400 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-2 text-sm">
+                  Read {replies} replies
+                </button>
+              </div>
+            </motion.div>
+          )
+        })}
       </div>
     </div>
   );

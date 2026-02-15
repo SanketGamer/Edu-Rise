@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import {dummyCoursesData} from "../assets/assets"
 import humanizeDuration from "humanize-duration";
 import {useAuth,useUser} from "@clerk/clerk-react"
 import axios from "axios";
@@ -11,9 +10,11 @@ const backendUrl=import.meta.env.VITE_BACKEND_URL
 const currency=import.meta.env.VITE_CURRENCY
 const [allcourses,setAllcourses]=useState([])
 const [isEducator,setEducator]=useState(false)
+const [student,setStudent]=useState(false)
 const [enrolledCourses,setEnrolledcourses]=useState([])
 const [showNavbar,setshowNavbar]=useState(false)
 const [filteredcourse,setfilteredcourse]=useState([])
+const [isAlreadyEnrolled,setisAlreadyEnrolled]=useState(false)
 const [userData,setUserData]=useState(null)
 const {getToken}=useAuth()
 const {user}=useUser()
@@ -21,7 +22,7 @@ const {user}=useUser()
 //fetch all courses
 async function fetchAllCourses(){
 try{
-  const {data}=await axios.get(backendUrl+"/api/v1/course/all") 
+  const {data}=await axios.get(backendUrl+"/api/v1/course/all")
   if(data.success){
     setAllcourses(data.courses)
   }
@@ -35,23 +36,25 @@ try{
 }
 
 async function fetchUserData(){
-    if(user.publicMetadata.role === 'educator'){
-        setEducator(true)
-    }
+    // if(user.publicMetadata.role === 'educator'){
+    //     setEducator(true)
+    // }
     try{
        const token = await getToken();
        const {data}=await axios.get(backendUrl+"/api/v1/user/data",{headers: {Authorization: `Bearer ${token}`}})
        if(data.success){
         setUserData(data.user)
+        setStudent(true);
        }
-        else{
-       toast.error(data.message)
-       }
+      //   else{
+      //  toast.error(data.message)
+      //  }
     }
     catch(error){
      toast.error(error.message)
     }
 }
+
 
 //function to calculate avg rating score
 function calculateRating(course){
@@ -70,13 +73,12 @@ async function FetchUserEnrolledCourses(){
     try{
      const token=await getToken()
     const {data} = await axios.get(backendUrl+"/api/v1/user/enrolled-courses",{headers:{Authorization:`Bearer ${token}`}})
-    console.log(data)
      if(data.success){
        setEnrolledcourses(data.enrolledCourses.reverse());
       }
-     else{
-       toast.error(data.message)
-       }
+    //  else{
+    //    toast.error(data.message)
+    //    }
     }
     catch(error){
      toast.error(error.message)
@@ -108,24 +110,35 @@ return humanizeDuration(time*60*1000,{units: ["h","m"]})
 //     console.log(await getToken())
 // }
 
+
+
+
 useEffect(()=>{
 fetchAllCourses()
 },[setshowNavbar])
+
+// useEffect(()=>{
+//   async function showtoken(){
+//     const token=await getToken();
+// console.log(token)
+//   }
+//   showtoken()
+// },[])
 
 useEffect(()=>{
 if(user){
    // logToken()
     fetchUserData()
-    FetchUserEnrolledCourses()
+    FetchUserEnrolledCourses()   
 }
 },[user])
 
 const val={
-currency,allcourses,calculateRating,isEducator,setEducator,
+currency,allcourses,calculateRating,student,setStudent,isEducator,setEducator,
 enrolledCourses,setEnrolledcourses,FetchUserEnrolledCourses,
 TotalCourseDuration,showNavbar,setshowNavbar,filteredcourse,
 setfilteredcourse,backendUrl,userData,setUserData,getToken,
-fetchAllCourses
+fetchAllCourses,isAlreadyEnrolled,setisAlreadyEnrolled
 }
 
 return (

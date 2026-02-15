@@ -1,13 +1,16 @@
 import Quill from 'quill';
 import React, { useContext, useEffect,useRef, useState } from 'react'
-import { assets } from '../../assets/assets';
 import uniqid from "uniqid"
-import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-const AddCourse = () => {
+import Educator from './Educator';
+import { EducatorContext } from '../context/EducatorContext';
+import { assets } from '../assets/assets';
+import "quill/dist/quill.snow.css";
 
-  const {backendUrl,getToken}=useContext(AppContext)
+
+const Addcourse = () => {
+  const {backendUrl,token}=useContext(EducatorContext)
   const quillRef=useRef();
   const editoRef=useRef();
   const [image,setimage]=useState(null)
@@ -17,6 +20,7 @@ const AddCourse = () => {
   const [chapters,setchapters]=useState([])
   const [showPopUp,setShowPopUp]=useState(false)
   const [currchapterId,setcurrChapterId]=useState(null)
+  const [isPublished, setIsPublished] = useState(false)
   const [syllabus,setSyllabus]=useState([
     {week:1, title: "", topics: [""]},
     {week:2, title: "", topics: [""]},
@@ -115,12 +119,12 @@ setshowsyllabus(true)
         discount: Number(discount),
         courseContent: chapters,
         syllabus,
-        isPublished: false, 
+        isPublished
        }
        const formData = new FormData()
        formData.append('courseData',JSON.stringify(courseData))
        formData.append('image',image)
-       const token=await getToken()
+       
        const {data}=await axios.post(backendUrl+"/api/v1/educator/add-course",formData,{headers: {Authorization: `Bearer ${token}`}})
        if(data.success){
         toast.success(data.message)
@@ -218,6 +222,7 @@ setshowsyllabus(true)
                           <img onClick={()=>handleLecture('remove',chapter.chapterId,lectureindex)} handleLecture src={assets.cross_icon} className='cursor-pointer'/>
                         </div>
                       })} 
+
                       <div onClick={()=>handleLecture('add',chapter.chapterId)} className='inline-flex bg-gray-100 p-2 rounded cursor-pointer'>+Add Lectures</div>
                     </div>
                   )}
@@ -284,12 +289,24 @@ setshowsyllabus(true)
                 }
               </div>
               <button onClick={()=>setshowsyllabus(false)} type='button' className='w-full bg-blue-400 text-white px-4 py-2 rounded'>Add Syllabus</button>
-              <img onClick={()=>setSyllabus(false)} className='absoulte w-4 mt-2 top-4 right-4 cursor-pointer' src={assets.cross_icon} />
+              <img onClick={()=>setshowsyllabus(false)} className='absoulte w-4 mt-2 top-4 right-4 cursor-pointer' src={assets.cross_icon} />
             </div>
           </div>
         )
        }
 
+        </div>
+           <div className="flex items-center gap-2 mt-4">
+          <input
+            type="checkbox"
+            id="isPublished"
+            checked={isPublished}
+            onChange={(e) => setIsPublished(e.target.checked)}
+            className="w-4 h-4 cursor-pointer"
+          />
+          <label htmlFor="isPublished" className="text-gray-700">
+            Publish this course
+          </label>
         </div>
         <button type='submit' className='bg-black text-white w-max py-2.5 px-8 rounded my-4 cursor-pointer'>ADD</button>
       </form>
@@ -297,4 +314,4 @@ setshowsyllabus(true)
   )
 }
 
-export default AddCourse
+export default Addcourse

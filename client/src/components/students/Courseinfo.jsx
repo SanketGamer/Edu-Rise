@@ -35,7 +35,7 @@ const Courseinfo = () => {
   return (
     <>
       {filteredcourse.map((course, index) => (
-        <div key={index}>
+        <div key={index} className='w-screen'>
           {/* Header Section */}
           <div className='bg-blue-600 md:py-30 px-20'>
             <h1 className='md:text-6xl text-4xl text-white md:w-1/2'>
@@ -46,12 +46,12 @@ const Courseinfo = () => {
           {/* Syllabus Section */}
           <div className='flex justify-between'>
             <div className='mt-6'>
-              <h2 className='font-medium text-4xl px-6 text-gray-700'>Syllabus :</h2>
+              <h2 className='font-medium text-4xl px-6 text-yellow-500'>Syllabus :</h2>
               {syllabus.length > 0 ? (
                 <div className='px-6 mt-4'>
                   {syllabus.map((weekObj, i) => (
                     <div key={i} className='mb-4 p-3'>
-                      <h3 className='font-thin text-xl'>
+                      <h3 className='font-thin text-xl text-white'>
                         Week {weekObj.week}: {weekObj.title}
                       </h3>
                       <ul className='list-none pl-6'>

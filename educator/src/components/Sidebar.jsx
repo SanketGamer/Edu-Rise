@@ -1,11 +1,11 @@
 import React, { useContext } from 'react'
-import { AppContext } from '../../context/AppContext'
 import { NavLink } from 'react-router-dom'
-import { assets } from '../../assets/assets'
+import { EducatorContext } from '../context/EducatorContext'
+import { assets } from '../assets/assets'
 
 
 const Sidebar = () => {
-  const {isEducator} =useContext(AppContext)
+  //const {isEducator}=useContext(EducatorContext)
   const MenuItems=[
     {name:"Dashboard", path:"/educator", icons:assets.home_icon},
     {name:"Add Course", path:"/educator/add-course", icons:assets.add_icon},
@@ -13,7 +13,7 @@ const Sidebar = () => {
     {name:"Students Enrolled", path:"/educator/student-enrolled", icons:assets.person_tick_icon},
   ]
 
-  return isEducator && (
+  return  (
     <div className='border-r min-h-screen w-16 md:w-64 text-gray-500 py-2 flex flex-col text-base'>
       {
         MenuItems.map((item,index)=>{

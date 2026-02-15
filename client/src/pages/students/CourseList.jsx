@@ -22,7 +22,7 @@ const CourseList = () => {
 
   return (
     <>
-    <div className='bg-gray-900 relative md:px-36 px-8 pt-20 text-left h-screen'>
+    <div className='bg-gray-900 relative md:px-36 px-8 pt-20 text-left h-screen w-screen'>
       {/* left Side */}
 
         {/* right Side Show courses */}

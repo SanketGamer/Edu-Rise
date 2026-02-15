@@ -1,13 +1,15 @@
 import {clerkClient} from "@clerk/express"
-
+import jwt from "jsonwebtoken";
 //Protect educator route that only educator can access
 export async function protectEducator(req,res,next){
     try{
-          const { userId } = req.auth(); 
-        const response=await clerkClient.users.getUser(userId)
-        if(response.publicMetadata.role !== 'educator'){
-            return res.json({success:false,message:"Unauthorized Access"})
+        const authHeader=req.headers.authorization;
+        if(!authHeader || !authHeader.startsWith("Bearer ")){
+            return res.status(401).json({ success: false, message: "No token provided" });
         }
+        const token=authHeader.split(" ")[1];
+        const decode=jwt.verify(token,process.env.JWT_SECRET)
+        req.educatorId=decode.educatorId;
         next();
 
     }
@@ -15,3 +17,4 @@ export async function protectEducator(req,res,next){
         res.json({success:false,message:error.message})
     }
 }
+

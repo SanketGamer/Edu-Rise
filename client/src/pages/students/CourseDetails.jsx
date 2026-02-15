@@ -53,14 +53,14 @@ const CourseDetails = () => {
                  const completeLecture = chapter.chapterContent.filter((lecture) => completed.includes(lecture)).length;
                 return <SheetSection key={chapterindex} title={chapter.chapterTitle} prevcnt={(completeLecture)} count={chapter.chapterContent.length}
                    progess={
-    <div className="w-full">
+         <div className="w-full">
       {/* filter.length=1/3=0.333 && 0.333*100=33% */}
-      <Line percent={(completeLecture/chapter.chapterContent.length)*100} 
-      strokeWidth={4} trailWidth={4} strokeColor="#22c55e" trailColor="#374151" className="rounded-full"/>
-    </div>
-  }>
-                <table className="w-full border-separate border-spacing-0">
-               <thead className='h-14'>
+       <Line percent={(completeLecture/chapter.chapterContent.length)*100} 
+        strokeWidth={4} trailWidth={4} strokeColor="#22c55e" trailColor="#374151" className="rounded-full"/>
+       </div>
+         }>
+          <table className="w-full border-separate border-spacing-0">
+           <thead className='h-14'>
               <tr className="border font-semibold bg-zinc-700">
               <th className='rounded-tl-xl'>Status</th>
               <th>No Of Lec</th>

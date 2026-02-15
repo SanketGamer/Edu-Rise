@@ -13,7 +13,7 @@
     chapterId:{type:String,required:true},
     chapterOrder:{type:Number,required:true},
     chapterTitle:{type:String,required:true},
-    chapterContent:[lectureSchema]
+    chapterContent:[lectureSchema],
     },{_id: false})
 
 
@@ -30,7 +30,7 @@
         {
        week: Number,
        title: String,
-       topics: [String],   // each week has topics
+       topics: [String],  
         }
       ],
         courseThumbnail:{
@@ -46,11 +46,17 @@
             min: 0,
             max: 100
         },
+        isPublished: {
+        type: Boolean,
+        default: false  
+       },
         courseContent:[chapterSchema],
         educator:{
             type:String,
             ref:"User"
         },
+        expiryDate: { type: Date,required: true},
+
         enrolledStudents:[
             {type:String,ref:"User"}
         ]

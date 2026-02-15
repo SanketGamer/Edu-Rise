@@ -2,15 +2,20 @@ import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../../context/AppContext'
 import {Line} from "rc-progress"
+import { useState } from 'react'
 
 
 const Myenrollments = () => {
   const navigate=useNavigate()
-  const {allcourses}=useContext(AppContext)
+  const {allcourses,enrolledCourses,setEnrolledcourses}=useContext(AppContext)
+  const [progressArray,setProgressArray]=useState([])
 
+  // async function getCourseProgress(){
+
+  // }
   return (
     <>
-   <div className='md:px-36 px-8 pt-10'>
+   <div className='md:px-36 px-8 pt-10 w-screen'>
     <h1 className='text-3xl font-semibold'>My Enrollments</h1>
     <table className='md:table-auto table-fixed w-full border mt-10 overflow-hidden'>
       <thead className='border-b text-gray-900 border-gray-500/20 text-sm text-left max:sm-hidden'>
