@@ -152,7 +152,7 @@ const Navbar = () => {
                 )} */}
               </>
             )}
-               <button onClick={() =>{BecomeEducator(),window.location.href = "http://localhost:5174/login"}}>
+               <button onClick={() =>{BecomeEducator(),window.location.href = "https://edu-riseuser.vercel.app/educator"}}>
                If you want to be an Educator, click here
                </button>
           </div>
