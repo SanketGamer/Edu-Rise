@@ -10,7 +10,7 @@ import connectCloudinary from "./configs/cloudinary.js"
 import courseRouter from "./routes/courseRoutes.js"
 import userRouter from "./routes/userRoutes.js"
 import bodyParser from "body-parser"
-import Course from "./models/course.js";   // <-- ADD THIS
+import Course from "./models/course.js";  
 
 
 
@@ -56,7 +56,7 @@ app.get("/fix-students", async (req, res) => {
         typeof s === "object" ? s._id : s
       );
 
-      await c.save({ validateBeforeSave: false }); // ✅ BYPASS VALIDATION
+      await c.save({ validateBeforeSave: false });
 
       fixed++;
     }
